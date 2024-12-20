@@ -1,0 +1,86 @@
+#include <iostream>
+#include <list>
+#include <string>
+using namespace std;
+
+class ElectronicDevice {
+protected:
+    string brand;
+    string model;
+
+public:
+    ElectronicDevice(const string& b, const string& m)
+        : brand(b), model(m) {}
+
+    virtual void display() const {
+        cout << "Brand: " << getBrand() << ", Model: " << getModel() << endl;
+    }
+
+    string getBrand() const { return brand; }
+    string getModel() const { return model; }
+
+    virtual ~ElectronicDevice() {}
+};
+
+class Smartphone : public ElectronicDevice {
+private:
+    string os;
+
+public:
+    Smartphone(const string& b, const string& m, const string& o)
+        : ElectronicDevice(b, m), os(o) {}
+
+    void display() const {
+        cout << "Smartphone - Brand: " << getBrand()
+             << ", Model: " << getModel()
+             << ", OS: " << os << endl;
+    }
+};
+
+class Laptop : public ElectronicDevice {
+private:
+    double screenSize;
+
+public:
+    Laptop(const string& b, const string& m, double size)
+        : ElectronicDevice(b, m), screenSize(size) {}
+
+    void display() const {
+        cout << "Laptop - Brand: " << getBrand()
+             << ", Model: " << getModel()
+             << ", Screen Size: " << screenSize << " inches" << endl;
+    }
+};
+
+void updateDevice(ElectronicDevice* device) {
+    if (Smartphone* phone = dynamic_cast<Smartphone*>(device)) {
+        phone->display();
+        cout << "Updating OS for " << phone->getBrand() << " " << phone->getModel() << endl;
+    }
+    else if (Laptop* laptop = dynamic_cast<Laptop*>(device)) {
+        laptop->display();
+        cout << "Updating screen size for " << laptop->getBrand() << " " << laptop->getModel() << endl;
+    }
+}
+
+int main() {
+    list<ElectronicDevice*> devices;
+
+    devices.push_back(new Smartphone("Apple", "iPhone 14", "iOS"));
+    devices.push_back(new Smartphone("Samsung", "Galaxy S23", "Android"));
+    devices.push_back(new Laptop("Dell", "XPS 13", 13.3));
+    devices.push_back(new Laptop("HP", "Spectre x360", 15.6));
+
+    for (list<ElectronicDevice*>::iterator it = devices.begin(); it != devices.end(); ++it) {
+        (*it)->display();
+    }
+
+    for (list<ElectronicDevice*>::iterator it = devices.begin(); it != devices.end(); ++it) {
+        updateDevice(*it);
+    }
+
+    for (list<ElectronicDevice*>::iterator it = devices.begin(); it != devices.end(); ++it) {
+        delete *it;
+    }
+
+}
